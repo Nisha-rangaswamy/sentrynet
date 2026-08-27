@@ -19,7 +19,7 @@ def main():
 		subprocess.run([
 			"hping3",
 			"-S",
-			"-flood",
+			"--flood",
 			"-p",
 			port,
 			target_ip

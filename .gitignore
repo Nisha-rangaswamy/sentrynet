@@ -1,0 +1,10 @@
+node_modules/
+dashboard/node_modules/
+
+venv/
+dashboard/backend/venv/
+
+__pycache__/
+*.pyc
+
+temp.csv

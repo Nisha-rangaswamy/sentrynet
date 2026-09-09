@@ -1,106 +1,36 @@
 import { useEffect, useState } from "react";
 
 function BlockedIP() {
-  const attacks = [
-    "SYN Flood",
-    "DDoS",
-    "Port Scan",
-    "UDP Flood",
-    "ICMP Flood",
-  ];
-
-  const generateIP = () => {
-    return `10.0.0.${Math.floor(Math.random() * 20) + 1}`;
-  };
-
-  const [blockedIPs, setBlockedIPs] = useState([
-    {
-      source: "10.0.0.2",
-      destination: "10.0.0.3",
-      attack: "SYN Flood",
-      status: "Blocked",
-    },
-    {
-      source: "10.0.0.5",
-      destination: "10.0.0.7",
-      attack: "Port Scan",
-      status: "Blocked",
-    },
-    {
-      source: "10.0.0.9",
-      destination: "10.0.0.1",
-      attack: "DDoS",
-      status: "Blocked",
-    },
-  ]);
+  const [blockedIPs, setBlockedIPs] = useState([]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      const newEntry = {
-        source: generateIP(),
-        destination: generateIP(),
-        attack: attacks[Math.floor(Math.random() * attacks.length)],
-        status: "Blocked",
-      };
+    const fetchData = () => {
+      fetch("http://localhost:5000/api/blocked-ips")
+        .then((res) => res.json())
+        .then((data) => setBlockedIPs(data))
+        .catch((err) => console.error("Error fetching blocked IPs:", err));
+    };
 
-      setBlockedIPs((previousIPs) => [
-        newEntry,
-        ...previousIPs.slice(0, 7),
-      ]);
-    }, 5000);
+    fetchData(); // Fetch immediately when loaded
+    const interval = setInterval(fetchData, 3000); // Re-fetch every 3 seconds
 
-    return () => clearInterval(interval);
+    return () => clearInterval(interval); // Clean up timer when component unmounts
   }, []);
 
   return (
     <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-lg">
-
-      <h2 className="text-xl font-semibold text-cyan-400 mb-4">
-        🚫 Blocked IPs
-      </h2>
-
-      <div className="overflow-x-auto">
-        <table className="w-full text-left text-sm">
-
-          <thead>
-            <tr className="border-b border-slate-600">
-              <th className="py-2">Source</th>
-              <th>Destination</th>
-              <th>Attack</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {blockedIPs.map((ip, index) => (
-              <tr
-                key={index}
-                className="border-b border-slate-700 hover:bg-slate-700 transition-colors"
-              >
-                <td className="py-3 font-mono">
-                  {ip.source}
-                </td>
-
-                <td className="font-mono">
-                  {ip.destination}
-                </td>
-
-                <td className="text-red-400 font-semibold">
-                  {ip.attack}
-                </td>
-
-                <td>
-                  <span className="bg-green-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
-                    {ip.status}
-                  </span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-
-        </table>
+      <h2 className="text-xl font-semibold text-cyan-400 mb-4">🚫 Blocked IPs</h2>
+      <div className="space-y-3">
+        {blockedIPs.map((item, index) => (
+          <div key={index} className="flex justify-between items-center p-3 bg-slate-700/50 rounded-lg">
+            <span className="font-mono text-slate-200">{item.ip}</span>
+            <span className="text-red-400 font-medium">{item.attack}</span>
+            <span className="px-2 py-1 text-xs rounded bg-red-500/20 text-red-300 font-semibold">
+              {item.status}
+            </span>
+          </div>
+        ))}
       </div>
-
     </div>
   );
 }

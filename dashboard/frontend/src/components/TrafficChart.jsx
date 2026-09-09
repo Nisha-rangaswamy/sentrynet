@@ -6,6 +6,7 @@ import {
   LineElement,
   Tooltip,
   Legend,
+  Filler,
 } from "chart.js";
 
 import { Line } from "react-chartjs-2";
@@ -17,55 +18,61 @@ ChartJS.register(
   PointElement,
   LineElement,
   Tooltip,
-  Legend
+  Legend,
+  Filler
 );
 
 function TrafficChart() {
-
-  const [labels, setLabels] = useState([
-    "10:00",
-    "10:05",
-    "10:10",
-    "10:15",
-    "10:20",
-    "10:25",
-    "10:30",
-  ]);
-
-  const [normalTraffic, setNormalTraffic] = useState([
-    120, 180, 210, 260, 310, 350, 420,
-  ]);
-
-  const [attackTraffic, setAttackTraffic] = useState([
-    5, 8, 6, 15, 18, 25, 20,
-  ]);
+  const [labels, setLabels] = useState([]);
+  const [normalTraffic, setNormalTraffic] = useState([]);
+  const [attackTraffic, setAttackTraffic] = useState([]);
 
   useEffect(() => {
+    const fetchTraffic = () => {
+      fetch("http://localhost:5000/api/traffic")
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("Traffic API response:", data);
 
-    const interval = setInterval(() => {
+          const time = new Date().toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+          });
 
-      const time = new Date().toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-      });
+          setLabels((prev) => {
+            const newLabels = [...prev, time];
+            return newLabels.slice(-7);
+          });
 
-      setLabels((prev) => [...prev.slice(1), time]);
+          setNormalTraffic((prev) => {
+            const newData = [
+              ...prev,
+              data.normal[data.normal.length - 1],
+            ];
+            return newData.slice(-7);
+          });
 
-      setNormalTraffic((prev) => [
-        ...prev.slice(1),
-        250 + Math.floor(Math.random() * 250),
-      ]);
+          setAttackTraffic((prev) => {
+            const newData = [
+              ...prev,
+              data.attack[data.attack.length - 1],
+            ];
+            return newData.slice(-7);
+          });
+        })
+        .catch((error) => {
+          console.error("Error fetching traffic data:", error);
+        });
+    };
 
-      setAttackTraffic((prev) => [
-        ...prev.slice(1),
-        5 + Math.floor(Math.random() * 30),
-      ]);
+    // Fetch immediately
+    fetchTraffic();
 
-    }, 3000);
+    // Fetch every 3 seconds
+    const interval = setInterval(fetchTraffic, 3000);
 
     return () => clearInterval(interval);
-
   }, []);
 
   const data = {
@@ -130,7 +137,6 @@ function TrafficChart() {
 
   return (
     <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-lg h-80">
-
       <h2 className="text-xl font-semibold text-cyan-400 mb-4">
         📈 Live Traffic
       </h2>
@@ -138,7 +144,6 @@ function TrafficChart() {
       <div className="h-56">
         <Line data={data} options={options} />
       </div>
-
     </div>
   );
 }

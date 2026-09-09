@@ -7,34 +7,51 @@ function NetworkTopology() {
 
       <div className="flex flex-col items-center justify-center h-72">
 
-        <div className="bg-cyan-600 px-5 py-2 rounded-lg font-semibold">
+        {/* Internet */}
+        <div className="bg-cyan-600 px-5 py-2 rounded-lg font-semibold shadow">
           🌐 Internet
         </div>
 
-        <div className="h-6 w-1 bg-cyan-400"></div>
+        <div className="h-5 w-1 bg-cyan-400"></div>
 
-        <div className="bg-blue-600 px-5 py-2 rounded-lg font-semibold">
+        {/* Controller */}
+        <div className="bg-blue-600 px-5 py-2 rounded-lg font-semibold shadow">
           🎛️ OS-Ken Controller
         </div>
 
-        <div className="h-6 w-1 bg-cyan-400"></div>
+        <div className="h-5 w-1 bg-cyan-400"></div>
 
-        <div className="bg-green-600 px-5 py-2 rounded-lg font-semibold">
-          🔀 Open vSwitch
+        {/* Switch */}
+        <div className="bg-green-600 px-5 py-2 rounded-lg font-semibold shadow">
+          🔀 Open vSwitch (s1)
         </div>
 
-        <div className="flex justify-center gap-10 mt-6">
+        {/* Hosts */}
+        <div className="flex justify-center gap-6 mt-6">
 
-          <div className="bg-purple-600 px-4 py-2 rounded-lg">
-            💻 Host 1
+          <div className="bg-purple-600 px-4 py-2 rounded-lg font-semibold">
+            💻 h1
           </div>
 
-          <div className="bg-orange-500 px-4 py-2 rounded-lg">
-            🤖 ML Model
+          <div className="bg-purple-600 px-4 py-2 rounded-lg font-semibold">
+            💻 h2
           </div>
 
-          <div className="bg-red-600 px-4 py-2 rounded-lg">
-            🚫 Mitigation
+          <div className="bg-red-600 px-4 py-2 rounded-lg font-semibold">
+            💻 h3
+          </div>
+
+        </div>
+
+        {/* Security modules */}
+        <div className="flex justify-center gap-6 mt-5">
+
+          <div className="bg-orange-500 px-4 py-2 rounded-lg font-semibold">
+            🤖 ML Detector
+          </div>
+
+          <div className="bg-red-700 px-4 py-2 rounded-lg font-semibold">
+            🛡️ Mitigation
           </div>
 
         </div>

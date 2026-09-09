@@ -1,72 +1,53 @@
-import { useLiveData } from "../context/LiveDataContext";
+import { useEffect, useState } from "react";
 
 function ThreatPanel() {
-  const { threat } = useLiveData();
+  const [threats, setThreats] = useState(null);
 
-  const getThreatColor = (level) => {
-    switch (level) {
-      case "LOW":
-        return "text-green-400";
-      case "MEDIUM":
-        return "text-yellow-400";
-      case "HIGH":
-        return "text-orange-400";
-      case "CRITICAL":
-        return "text-red-500";
-      default:
-        return "text-red-500";
-    }
+  useEffect(() => {
+  const fetchThreats = () => {
+    fetch("http://localhost:5000/api/threats")
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("Threat Panel API response:", data);
+        setThreats(data);
+      })
+      .catch((err) =>
+        console.error("Error fetching threats:", err)
+      );
   };
+
+  fetchThreats();
+
+  const interval = setInterval(fetchThreats, 3000);
+
+  return () => clearInterval(interval);
+}, []);
 
   return (
     <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-lg">
-
-      <h2 className="text-xl font-semibold text-cyan-400 mb-6">
-        🚨 Latest Threat
+      <h2 className="text-xl font-semibold text-cyan-400 mb-4">
+        ⚠️ Threat Metrics
       </h2>
-
-      <div className="space-y-6">
-
-        <div>
-          <p className="text-slate-400">Threat Level</p>
-
-          <h1 className={`text-3xl font-bold ${getThreatColor(threat.level)}`}>
-            {threat.level}
-          </h1>
+      <div className="grid grid-cols-3 gap-4 text-center">
+        <div className="bg-slate-700/50 p-4 rounded-lg border border-slate-600/50">
+          <p className="text-slate-400 text-sm">Total Threats</p>
+          <p className="text-2xl font-bold text-white">
+            {threats ? threats.total_threats : "..."}
+          </p>
         </div>
-
-        <div>
-          <p className="text-slate-400">Attack Type</p>
-
-          <h2 className="text-xl font-semibold">
-            {threat.attack}
-          </h2>
+        <div className="bg-slate-700/50 p-4 rounded-lg border border-slate-600/50">
+          <p className="text-slate-400 text-sm">Active</p>
+          <p className="text-2xl font-bold text-red-400">
+            {threats ? threats.active_threats : "..."}
+          </p>
         </div>
-
-        <div>
-          <p className="text-slate-400">Confidence</p>
-
-          <h2 className="text-2xl text-green-400 font-bold">
-            {threat.confidence}%
-          </h2>
+        <div className="bg-slate-700/50 p-4 rounded-lg border border-slate-600/50">
+          <p className="text-slate-400 text-sm">Blocked</p>
+          <p className="text-2xl font-bold text-green-400">
+            {threats ? threats.blocked_threats : "..."}
+          </p>
         </div>
-
-        <div>
-          <p className="text-slate-400">Status</p>
-
-          <h2 className="text-cyan-400 font-bold">
-            {threat.level === "LOW"
-              ? "Monitoring"
-              : threat.level === "MEDIUM"
-              ? "Analyzing"
-              : threat.level === "HIGH"
-              ? "Mitigation Triggered"
-              : "Immediate Action Required"}
-          </h2>
-        </div>
-
       </div>
-
     </div>
   );
 }
